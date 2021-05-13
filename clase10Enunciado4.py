@@ -1,34 +1,26 @@
-''' Ejercicio Clases:
-1. Crear una clase Producto con los siguiente atributos:
-    - codigo
-    - nombre
-    - precio
-Crearle, su constructor, getter y setter y una funcion llamada calcular_total, donde le pasaremos
-unas unidades y debe calcular el precio final.
-
-2. Añadir una clase Pedido que tiene como atributos:
-    - lista de productos
-    - lista de cantidades
-Añade la siguiente funcionalidad:
-    - total_pedido = Muestra el precio final del pedido
-    - mostrar_productos = Muestra los productos del pedido
-
-3. Siguiendo con la clase Pedido, añade la siguiente funcionalidad:
-    - aniadir_producto = le pasamos un producto y una cantidad,
-    Debemos validar que el dato que nos pasen es correcto, es decir,
-    que sea un Producto y que la cantidad sea valida. En caso de que no,
-    devolver una exception.
-    - eliminar_producto = Le pasamos el Producto a borrar, si existe, lo eliminamos.
-    Si no existe devolver una excepción, indicándolo.
-    Comprobar también, que es un Producto el elemento que se pasa por parámetro
 '''
+4. Crea una clase Descuento que tiene los siguientes atributos:
+	- tipo: es un string y solo puede ser Fijo o Porcentaje
+	- valor: es un numero, si es fijo debe ser mayor que 0 y si es porcentaje el valor debe estar entre 1 y 100.
+Tiene la siguiente funcionalidad:
+	- aplicar_descuento(precio):
+		- Si el tipo es Fijo, se le resta la cantidad al precio
+		- Si el tipo es Porcentaje, se le resta el porcentaje al precio
+Añadir este descuento al producto, este sera opcional y solo se aplicara si tiene descuento.
+Validar que el descuento se crea correctamente
+'''
+
+TIPO_DESC_FIJO = "Fijo"
+TIPO_DESC_PORC = "Porcentaje"
+
 
 class Producto:
 
-    def __init__(self, codigo, nombre, precio):
+    def __init__(self, codigo, nombre, precio, descuento=None):
         self.__codigo = codigo
         self.__nombre = nombre
         self.__precio = precio
+        self.__descuento = descuento
 
     @property # Otra forma de hacer un get
     def codigo(self):
@@ -48,14 +40,17 @@ class Producto:
 
     @property
     def precio(self):
-        return self.__precio
+        if self.__descuento == None:
+            return self.__precio
+        else:
+            return self.__descuento.aplicar_descuento(self.__precio)
 
     @precio.setter
     def precio(self, precio):
         self.__precio = precio
 
     def calcular_total(self, unidades):
-        return self.__precio * unidades
+        return self.precio * unidades
 
     # Objetivo del método str: Retornar un string con los atributos de la clase
     def __str__(self): # Sobreescritura de método __str__
@@ -111,8 +106,58 @@ class Pedido:
             print('Producto: ' + p.nombre + ', Cantidad: ' + str(c))
 
 
-p1 = Producto(1, 'Producto 1', 5)
-p2 = Producto(2, 'Producto 2', 10)
+class Descuento:
+
+    def __init__(self, tipo, valor):
+        if not isinstance(valor, int):
+            raise Exception('Error: El valor debe ser de tipo Integer')
+
+        if not isinstance(tipo, str):
+            raise Exception('Error: El tipo debe ser de tipo String')
+
+        if tipo != 'Fijo' and tipo != 'Porcentaje':
+            raise Exception('Error: El descuento debe ser Fijo o Porcentaje')
+
+        if tipo == 'Fijo' and valor <= 0:
+            raise Exception('Error: El descuento fijo debe ser mayor que cero')
+
+        if tipo == 'Porcentaje' and valor < 0 or valor > 100:
+            raise Exception('Error: El descuento por porcentaje debe estar entre 0 y 100')
+
+        self.__tipo = tipo
+        self.__valor = valor
+
+    @property
+    def tipo(self):
+        return self.__tipo
+
+    @tipo.setter
+    def tipo(self, tipo):
+        self.__tipo = tipo
+
+    @property
+    def valor(self):
+        return self.__valor
+
+    @valor.setter
+    def valor(self, valor):
+        self.__valor = valor
+
+    def aplicar_descuento(self, precio):
+        if self.__tipo == 'Fijo':
+            if precio > self.__valor:
+                return precio - self.__valor
+            else:
+                return 0
+        else:
+            return precio - (precio * (self.__valor / 100))
+
+
+desc1 = Descuento('Fijo', 10)
+desc2 = Descuento('Porcentaje', 40)
+
+p1 = Producto(1, 'Producto 1', 5, desc1)
+p2 = Producto(2, 'Producto 2', 10, desc2)
 p3 = Producto(3, 'Producto 3', 20)
 
 pedido = Pedido()
