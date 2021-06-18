@@ -15,6 +15,10 @@ class Computadora:
         self.__teclado = teclado
         self.__raton = raton
 
+    @property
+    def nombre(self):
+        return self.__nombre
+
     def __str__(self):
         return f'''
         Computadora

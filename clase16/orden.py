@@ -7,6 +7,10 @@ class Orden:
         self.__id_orden = Orden.contador_ordenes
         self.__computadoras = []
 
+    @property
+    def id_orden(self):
+        return self.__id_orden
+
     def agregar_computadora(self, computadora):
         self.__computadoras.append(computadora)
 
